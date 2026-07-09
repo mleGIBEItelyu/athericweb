@@ -214,270 +214,272 @@ export function Evaluasi() {
         </div>
       </div>
 
-      {/* Month Selector */}
-      <div className="card" style={{ padding: '6px', display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '0' }}>
-        {EVAL_DATA.map((d, i) => (
-          <button
-            key={d.month}
-            onClick={() => setSelectedIdx(i)}
-            style={{
-              padding: '8px 18px', borderRadius: 'var(--radius-sm)',
-              fontWeight: 700, fontSize: '12.5px', cursor: 'pointer', transition: 'all .15s',
-              background: selectedIdx === i ? 'var(--blue)' : 'none',
-              color: selectedIdx === i ? '#fff' : 'var(--text-dim)',
-              border: 'none',
-            }}
-          >
-            {d.month}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Overview Row ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-
-        {/* Accuracy card */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '20px' }}>
-          <div style={{ position: 'relative', width: '96px', height: '96px', flexShrink: 0 }}>
-            <AccuracyGauge pct={dirPct} />
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ fontSize: '22px', fontWeight: 900, color: gaugeColor, lineHeight: 1 }}>{dirPct}%</span>
-              <span style={{ fontSize: '9px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', marginTop: '2px' }}>Akurasi</span>
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Akurasi Arah</div>
-            <div style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{data.correct}/{data.total}</div>
-            <div style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px' }}>
-              {wrongDir} prediksi meleset
-            </div>
-            {delta !== null && (
-              <div style={{
-                marginTop: '8px', fontSize: '11px', fontWeight: 700,
-                color: delta >= 0 ? 'var(--green)' : 'var(--red)',
-                display: 'flex', alignItems: 'center', gap: '4px',
-              }}>
-                {delta >= 0 ? '▲' : '▼'} {Math.abs(delta)}% vs {prev.month}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* CI Coverage */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '20px' }}>
-          <div style={{ position: 'relative', width: '96px', height: '96px', flexShrink: 0 }}>
-            <AccuracyGauge pct={rangePct} />
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ fontSize: '22px', fontWeight: 900, color: rangeColor, lineHeight: 1 }}>{rangePct}%</span>
-              <span style={{ fontSize: '9px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', marginTop: '2px' }}>CI Cover</span>
-            </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Coverage 90% CI</div>
-            <div style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{data.inRange}/{data.total}</div>
-            <div style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px' }}>
-              {outRange} di luar rentang CI
-            </div>
-            <div style={{ marginTop: '8px', fontSize: '11px', color: 'var(--text-mute)' }}>Target ideal ≥ 65%</div>
-          </div>
-        </div>
-
-        {/* MAPE + best/worst */}
-        <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Rata-rata Error (MAPE)</div>
-          <div style={{ fontSize: '32px', fontWeight: 900, color: 'var(--blue-bright)', lineHeight: 1 }}>{data.avgError}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-              <span style={{ color: 'var(--text-dim)' }}>Terbaik</span>
-              <span style={{ fontWeight: 800, color: 'var(--green)' }}>{data.bestTicker}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-              <span style={{ color: 'var(--text-dim)' }}>Terburuk</span>
-              <span style={{ fontWeight: 800, color: 'var(--red)' }}>{data.worstTicker}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Trend mini card */}
-        <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tren Akurasi (4 Bulan)</div>
-          <svg viewBox={`0 0 ${(trendData.length - 1) * 40} 60`} style={{ width: '100%', height: '60px' }}>
-            <polyline
-              points={trendData.map((v, i) => `${i * 40},${60 - (v / 100) * 56}`).join(' ')}
-              fill="none" stroke="var(--blue)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-            />
-            {trendData.map((v, i) => (
-              <circle key={i} cx={i * 40} cy={60 - (v / 100) * 56} r="3.5" fill="var(--blue)" />
-            ))}
-          </svg>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            {trendData.map((v, i) => (
-              <span key={i} style={{ fontSize: '10px', color: i === trendData.length - 1 ? 'var(--blue-bright)' : 'var(--text-mute)', fontWeight: 700 }}>{v}%</span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Model Info + Period ── */}
-      <div className="card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{
-            padding: '4px 10px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700,
-            background: 'var(--blue-soft)', border: '1px solid rgba(79,125,255,0.25)', color: 'var(--blue-bright)',
-          }}>
-            {data.model}
-          </span>
-          <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>Periode: <strong style={{ color: 'var(--text)' }}>{data.period}</strong></span>
-        </div>
-        <span style={{ fontSize: '12px', color: 'var(--text-dim)', fontStyle: 'italic', maxWidth: '400px', textAlign: 'right' }}>"{data.note}"</span>
-      </div>
-
-      {/* ── Strengths & Weaknesses ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-        {/* Kelebihan */}
-        <div className="card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--green)', flexShrink: 0 }} />
-            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>Kelebihan Bulan Ini</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {data.strengths.map((s, i) => (
-              <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                <span style={{
-                  width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
-                  background: 'rgba(46,194,122,0.12)', border: '1px solid rgba(46,194,122,0.3)',
-                  display: 'grid', placeItems: 'center', fontSize: '10px', color: 'var(--green)', fontWeight: 800,
-                }}>✓</span>
-                <span style={{ fontSize: '12.5px', color: 'var(--text-dim)', lineHeight: 1.5 }}>{s}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Kekurangan */}
-        <div className="card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--red)', flexShrink: 0 }} />
-            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>Kekurangan & Catatan</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {data.weaknesses.map((w, i) => (
-              <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                <span style={{
-                  width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
-                  background: 'rgba(240,86,75,0.12)', border: '1px solid rgba(240,86,75,0.3)',
-                  display: 'grid', placeItems: 'center', fontSize: '10px', color: 'var(--red)', fontWeight: 800,
-                }}>✕</span>
-                <span style={{ fontSize: '12.5px', color: 'var(--text-dim)', lineHeight: 1.5 }}>{w}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Per-Ticker Breakdown ── */}
-      <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 20px', borderBottom: '1px solid var(--border)',
-        }}>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>Detail Per Emiten — {data.month}</span>
-          <button
-            onClick={() => setDetailOpen(o => !o)}
-            style={{
-              fontSize: '12px', fontWeight: 600, color: 'var(--blue-bright)', cursor: 'pointer',
-              padding: '5px 12px', borderRadius: '6px', background: 'var(--blue-soft)', border: 'none',
-            }}
-          >
-            {detailOpen ? 'Sembunyikan' : 'Tampilkan Semua'}
-          </button>
-        </div>
-
-        {/* Summary bar rows */}
-        <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {(detailOpen ? data.details : data.details.slice(0, 4)).map(row => (
-            <div key={row.ticker} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ fontWeight: 800, fontSize: '12px', color: 'var(--text)', width: '46px', flexShrink: 0 }}>{row.ticker}</span>
-              <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
-                <span style={{
-                  fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
-                  background: row.correct ? 'rgba(46,194,122,0.12)' : 'rgba(240,86,75,0.12)',
-                  border: `1px solid ${row.correct ? 'rgba(46,194,122,0.3)' : 'rgba(240,86,75,0.3)'}`,
-                  color: row.correct ? 'var(--green)' : 'var(--red)',
-                }}>
-                  {row.correct ? '✓ BENAR' : '✕ SALAH'}
-                </span>
-                <span style={{
-                  fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
-                  background: row.inRange ? 'rgba(79,125,255,0.10)' : 'rgba(217,161,58,0.10)',
-                  border: `1px solid ${row.inRange ? 'rgba(79,125,255,0.25)' : 'rgba(217,161,58,0.25)'}`,
-                  color: row.inRange ? 'var(--blue-bright)' : 'var(--amber)',
-                }}>
-                  {row.inRange ? 'Dalam CI' : 'Di luar CI'}
-                </span>
-              </div>
-              <Bar
-                pct={100 - Math.min(parseFloat(row.error), 100)}
-                color={parseFloat(row.error) < 5 ? 'var(--green)' : parseFloat(row.error) < 12 ? 'var(--amber)' : 'var(--red)'}
-              />
-              <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-dim)', width: '38px', textAlign: 'right', flexShrink: 0 }}>
-                {row.error}
-              </span>
-              <span style={{ fontSize: '11px', color: 'var(--text-mute)', width: '80px', flexShrink: 0, textAlign: 'right' }}>
-                Aktual: <strong style={{ color: 'var(--text)' }}>{row.actual}</strong>
-              </span>
-            </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* Month Selector */}
+        <div className="card" style={{ padding: '6px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+          {EVAL_DATA.map((d, i) => (
+            <button
+              key={d.month}
+              onClick={() => setSelectedIdx(i)}
+              style={{
+                padding: '8px 18px', borderRadius: 'var(--radius-sm)',
+                fontWeight: 700, fontSize: '12.5px', cursor: 'pointer', transition: 'all .15s',
+                background: selectedIdx === i ? 'var(--blue)' : 'none',
+                color: selectedIdx === i ? '#fff' : 'var(--text-dim)',
+                border: 'none',
+              }}
+            >
+              {d.month}
+            </button>
           ))}
         </div>
-      </div>
 
-      {/* ── Monthly Comparison Table ── */}
-      {prevDirPct !== null && (
-        <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>
-            Perbandingan: {data.month} vs {prev.month}
+        {/* ── Overview Row ── */}
+        <div className="eval-overview">
+
+          {/* Accuracy card */}
+          <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '20px' }}>
+            <div style={{ position: 'relative', width: '96px', height: '96px', flexShrink: 0 }}>
+              <AccuracyGauge pct={dirPct} />
+              <div style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ fontSize: '22px', fontWeight: 900, color: gaugeColor, lineHeight: 1 }}>{dirPct}%</span>
+                <span style={{ fontSize: '9px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', marginTop: '2px' }}>Akurasi</span>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Akurasi Arah</div>
+              <div style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{data.correct}/{data.total}</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px' }}>
+                {wrongDir} prediksi meleset
+              </div>
+              {delta !== null && (
+                <div style={{
+                  marginTop: '8px', fontSize: '11px', fontWeight: 700,
+                  color: delta >= 0 ? 'var(--green)' : 'var(--red)',
+                  display: 'flex', alignItems: 'center', gap: '4px',
+                }}>
+                  {delta >= 0 ? '▲' : '▼'} {Math.abs(delta)}% vs {prev.month}
+                </div>
+              )}
+            </div>
           </div>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
-              <thead>
-                <tr>
-                  {['Metrik', data.month, prev.month, 'Selisih'].map(h => (
-                    <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid var(--border)' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { label: 'Akurasi Arah', cur: `${dirPct}%`, prv: `${prevDirPct}%`, d: delta ?? 0, isUp: (delta ?? 0) >= 0 },
-                  { label: 'Coverage 90% CI', cur: `${rangePct}%`, prv: `${Math.round((prev.inRange / prev.total) * 100)}%`, d: rangePct - Math.round((prev.inRange / prev.total) * 100), isUp: rangePct >= Math.round((prev.inRange / prev.total) * 100) },
-                  { label: 'Rata-rata Error (MAPE)', cur: data.avgError, prv: prev.avgError, d: parseFloat(prev.avgError) - parseFloat(data.avgError), isUp: parseFloat(data.avgError) < parseFloat(prev.avgError) },
-                  { label: 'Prediksi Benar', cur: `${data.correct}/${data.total}`, prv: `${prev.correct}/${prev.total}`, d: data.correct - prev.correct, isUp: data.correct >= prev.correct },
-                ].map(row => (
-                  <tr key={row.label} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '12px 16px', fontSize: '12.5px', color: 'var(--text-dim)', fontWeight: 600 }}>{row.label}</td>
-                    <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 800, color: 'var(--text)' }}>{row.cur}</td>
-                    <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-dim)' }}>{row.prv}</td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{
-                        fontSize: '12px', fontWeight: 700,
-                        color: row.isUp ? 'var(--green)' : 'var(--red)',
-                      }}>
-                        {row.isUp ? '▲' : '▼'} {Math.abs(row.d).toFixed(row.d % 1 !== 0 ? 1 : 0)}{typeof row.d === 'number' && row.label.includes('%') ? '' : ''}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+          {/* CI Coverage */}
+          <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '20px' }}>
+            <div style={{ position: 'relative', width: '96px', height: '96px', flexShrink: 0 }}>
+              <AccuracyGauge pct={rangePct} />
+              <div style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ fontSize: '22px', fontWeight: 900, color: rangeColor, lineHeight: 1 }}>{rangePct}%</span>
+                <span style={{ fontSize: '9px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', marginTop: '2px' }}>CI Cover</span>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Coverage 90% CI</div>
+              <div style={{ fontSize: '22px', fontWeight: 900, color: 'var(--text)', lineHeight: 1 }}>{data.inRange}/{data.total}</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px' }}>
+                {outRange} di luar rentang CI
+              </div>
+              <div style={{ marginTop: '8px', fontSize: '11px', color: 'var(--text-mute)' }}>Target ideal ≥ 65%</div>
+            </div>
+          </div>
+
+          {/* MAPE + best/worst */}
+          <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Rata-rata Error (MAPE)</div>
+            <div style={{ fontSize: '32px', fontWeight: 900, color: 'var(--blue-bright)', lineHeight: 1 }}>{data.avgError}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                <span style={{ color: 'var(--text-dim)' }}>Terbaik</span>
+                <span style={{ fontWeight: 800, color: 'var(--green)' }}>{data.bestTicker}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                <span style={{ color: 'var(--text-dim)' }}>Terburuk</span>
+                <span style={{ fontWeight: 800, color: 'var(--red)' }}>{data.worstTicker}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Trend mini card */}
+          <div className="card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tren Akurasi (4 Bulan)</div>
+            <svg viewBox={`0 0 ${(trendData.length - 1) * 40} 60`} style={{ width: '100%', height: '60px' }}>
+              <polyline
+                points={trendData.map((v, i) => `${i * 40},${60 - (v / 100) * 56}`).join(' ')}
+                fill="none" stroke="var(--blue)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+              />
+              {trendData.map((v, i) => (
+                <circle key={i} cx={i * 40} cy={60 - (v / 100) * 56} r="3.5" fill="var(--blue)" />
+              ))}
+            </svg>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              {trendData.map((v, i) => (
+                <span key={i} style={{ fontSize: '10px', color: i === trendData.length - 1 ? 'var(--blue-bright)' : 'var(--text-mute)', fontWeight: 700 }}>{v}%</span>
+              ))}
+            </div>
           </div>
         </div>
-      )}
+
+        {/* ── Model Info + Period ── */}
+        <div className="card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{
+              padding: '4px 10px', borderRadius: '6px', fontSize: '10.5px', fontWeight: 700,
+              background: 'var(--blue-soft)', border: '1px solid rgba(79,125,255,0.25)', color: 'var(--blue-bright)',
+            }}>
+              {data.model}
+            </span>
+            <span style={{ fontSize: '12px', color: 'var(--text-dim)' }}>Periode: <strong style={{ color: 'var(--text)' }}>{data.period}</strong></span>
+          </div>
+          <span style={{ fontSize: '12px', color: 'var(--text-dim)', fontStyle: 'italic', maxWidth: '400px', textAlign: 'right' }}>"{data.note}"</span>
+        </div>
+
+        {/* ── Strengths & Weaknesses ── */}
+        <div className="eval-sw-grid">
+          {/* Kelebihan */}
+          <div className="card" style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--green)', flexShrink: 0 }} />
+              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>Kelebihan Bulan Ini</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {data.strengths.map((s, i) => (
+                <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                  <span style={{
+                    width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+                    background: 'rgba(46,194,122,0.12)', border: '1px solid rgba(46,194,122,0.3)',
+                    display: 'grid', placeItems: 'center', fontSize: '10px', color: 'var(--green)', fontWeight: 800,
+                  }}>✓</span>
+                  <span style={{ fontSize: '12.5px', color: 'var(--text-dim)', lineHeight: 1.5 }}>{s}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Kekurangan */}
+          <div className="card" style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--red)', flexShrink: 0 }} />
+              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>Kekurangan & Catatan</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {data.weaknesses.map((w, i) => (
+                <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                  <span style={{
+                    width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+                    background: 'rgba(240,86,75,0.12)', border: '1px solid rgba(240,86,75,0.3)',
+                    display: 'grid', placeItems: 'center', fontSize: '10px', color: 'var(--red)', fontWeight: 800,
+                  }}>✕</span>
+                  <span style={{ fontSize: '12.5px', color: 'var(--text-dim)', lineHeight: 1.5 }}>{w}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Per-Ticker Breakdown ── */}
+        <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '16px 20px', borderBottom: '1px solid var(--border)',
+          }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>Detail Per Emiten — {data.month}</span>
+            <button
+              onClick={() => setDetailOpen(o => !o)}
+              style={{
+                fontSize: '12px', fontWeight: 600, color: 'var(--blue-bright)', cursor: 'pointer',
+                padding: '5px 12px', borderRadius: '6px', background: 'var(--blue-soft)', border: 'none',
+              }}
+            >
+              {detailOpen ? 'Sembunyikan' : 'Tampilkan Semua'}
+            </button>
+          </div>
+
+          {/* Summary bar rows */}
+          <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {(detailOpen ? data.details : data.details.slice(0, 4)).map(row => (
+              <div key={row.ticker} className="eval-detail-row">
+                <span style={{ fontWeight: 800, fontSize: '12px', color: 'var(--text)', width: '46px', flexShrink: 0 }}>{row.ticker}</span>
+                <div className="eval-detail-badges">
+                  <span style={{
+                    fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
+                    background: row.correct ? 'rgba(46,194,122,0.12)' : 'rgba(240,86,75,0.12)',
+                    border: `1px solid ${row.correct ? 'rgba(46,194,122,0.3)' : 'rgba(240,86,75,0.3)'}`,
+                    color: row.correct ? 'var(--green)' : 'var(--red)',
+                  }}>
+                    {row.correct ? '✓ BENAR' : '✕ SALAH'}
+                  </span>
+                  <span style={{
+                    fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px',
+                    background: row.inRange ? 'rgba(79,125,255,0.10)' : 'rgba(217,161,58,0.10)',
+                    border: `1px solid ${row.inRange ? 'rgba(79,125,255,0.25)' : 'rgba(217,161,58,0.25)'}`,
+                    color: row.inRange ? 'var(--blue-bright)' : 'var(--amber)',
+                  }}>
+                    {row.inRange ? 'Dalam CI' : 'Di luar CI'}
+                  </span>
+                </div>
+                <Bar
+                  pct={100 - Math.min(parseFloat(row.error), 100)}
+                  color={parseFloat(row.error) < 5 ? 'var(--green)' : parseFloat(row.error) < 12 ? 'var(--amber)' : 'var(--red)'}
+                />
+                <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-dim)', width: '38px', textAlign: 'right', flexShrink: 0 }}>
+                  {row.error}
+                </span>
+                <span className="eval-detail-actual">
+                  Aktual: <strong style={{ color: 'var(--text)' }}>{row.actual}</strong>
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Monthly Comparison Table ── */}
+        {prevDirPct !== null && (
+          <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>
+              Perbandingan: {data.month} vs {prev.month}
+            </div>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
+                <thead>
+                  <tr>
+                    {['Metrik', data.month, prev.month, 'Selisih'].map(h => (
+                      <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 700, color: 'var(--text-mute)', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid var(--border)' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { label: 'Akurasi Arah', cur: `${dirPct}%`, prv: `${prevDirPct}%`, d: delta ?? 0, isUp: (delta ?? 0) >= 0 },
+                    { label: 'Coverage 90% CI', cur: `${rangePct}%`, prv: `${Math.round((prev.inRange / prev.total) * 100)}%`, d: rangePct - Math.round((prev.inRange / prev.total) * 100), isUp: rangePct >= Math.round((prev.inRange / prev.total) * 100) },
+                    { label: 'Rata-rata Error (MAPE)', cur: data.avgError, prv: prev.avgError, d: parseFloat(prev.avgError) - parseFloat(data.avgError), isUp: parseFloat(data.avgError) < parseFloat(prev.avgError) },
+                    { label: 'Prediksi Benar', cur: `${data.correct}/${data.total}`, prv: `${prev.correct}/${prev.total}`, d: data.correct - prev.correct, isUp: data.correct >= prev.correct },
+                  ].map(row => (
+                    <tr key={row.label} style={{ borderBottom: '1px solid var(--border)' }}>
+                      <td style={{ padding: '12px 16px', fontSize: '12.5px', color: 'var(--text-dim)', fontWeight: 600 }}>{row.label}</td>
+                      <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 800, color: 'var(--text)' }}>{row.cur}</td>
+                      <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-dim)' }}>{row.prv}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span style={{
+                          fontSize: '12px', fontWeight: 700,
+                          color: row.isUp ? 'var(--green)' : 'var(--red)',
+                        }}>
+                          {row.isUp ? '▲' : '▼'} {Math.abs(row.d).toFixed(row.d % 1 !== 0 ? 1 : 0)}{typeof row.d === 'number' && row.label.includes('%') ? '' : ''}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
