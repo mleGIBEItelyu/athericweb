@@ -16,8 +16,13 @@ export function StockHeader({ ticker }: Props) {
 
   // Sync watchlist status with localStorage
   useEffect(() => {
-    const list = JSON.parse(localStorage.getItem('watchlist') || '[]') as string[]
-    setIsWatchlisted(list.includes(ticker))
+    try {
+      const list = JSON.parse(localStorage.getItem('watchlist') || '[]')
+      const cleanList = Array.isArray(list) ? list.filter((t): t is string => typeof t === 'string' && t.trim() !== '') : []
+      setIsWatchlisted(cleanList.includes(ticker))
+    } catch {
+      setIsWatchlisted(false)
+    }
   }, [ticker])
 
   function toggleWatchlist() {

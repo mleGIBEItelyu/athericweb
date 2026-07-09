@@ -17,7 +17,12 @@ function exportCSV(rows: RankingRow[]) {
 }
 
 function getWatchlist(): string[] {
-  try { return JSON.parse(localStorage.getItem('watchlist') || '[]') } catch { return [] }
+  try {
+    const list = JSON.parse(localStorage.getItem('watchlist') || '[]')
+    return Array.isArray(list) ? list.filter((t): t is string => typeof t === 'string' && t.trim() !== '') : []
+  } catch {
+    return []
+  }
 }
 
 function StarButton({ ticker }: { ticker: string }) {
@@ -132,8 +137,8 @@ export function RankingTable({ searchQuery }: { searchQuery?: string }) {
           <div style={{ fontSize: '11.5px', color: 'var(--text-dim)', maxWidth: '280px' }}>Tidak ada emiten yang cocok dengan kueri pencarian atau filter Anda.</div>
         </div>
       ) : (
-        <div className="overflow-x-auto w-full">
-          <table className="rank-table min-w-[650px]">
+        <div className="table-scroll">
+          <table className="rank-table">
             <thead>
               <tr>{COLUMNS.map((c, i) => <th key={c} className={['Exp. Return', 'Market Cap'].includes(c) ? 'num' : ''}>{c}{i === 0 ? ' ↓' : ''}</th>)}</tr>
             </thead>

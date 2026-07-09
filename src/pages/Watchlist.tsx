@@ -10,8 +10,20 @@ export function Watchlist() {
 
   useEffect(() => {
     function loadWatchlist() {
-      const list = JSON.parse(localStorage.getItem('watchlist') || '[]') as string[]
-      setWatchlist(list)
+      try {
+        const list = JSON.parse(localStorage.getItem('watchlist') || '[]')
+        if (Array.isArray(list)) {
+          const cleanList = list.filter((t): t is string => typeof t === 'string' && t.trim() !== '')
+          setWatchlist(cleanList)
+          if (cleanList.length !== list.length) {
+            localStorage.setItem('watchlist', JSON.stringify(cleanList))
+          }
+        } else {
+          setWatchlist([])
+        }
+      } catch {
+        setWatchlist([])
+      }
     }
     loadWatchlist()
     window.addEventListener('storage', loadWatchlist)

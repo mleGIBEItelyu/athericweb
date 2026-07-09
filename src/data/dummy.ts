@@ -3,7 +3,7 @@ import type { Stock, ForecastData, TargetData, SentimentItem, SynthesisData, New
 export const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: 'grid', href: '/' },
   { id: 'markets', label: 'Markets', icon: 'bars', href: '/markets' },
-  { id: 'watchlists', label: 'Watchlists', icon: 'eye', href: '#' },
+  { id: 'watchlists', label: 'Watchlists', icon: 'eye', href: '/watchlist' },
   { id: 'evaluasi', label: 'Evaluasi Model', icon: 'clipboard', href: '/evaluasi' },
 ]
 
@@ -342,11 +342,11 @@ function generateFallbackData(ticker: string): typeof TICKER_DB['BBCA'] {
 
 // Data Getters
 export function getDummyStock(ticker: string): Stock {
-  const clean = ticker.toUpperCase()
+  const clean = (ticker || '').toUpperCase()
   const db = TICKER_DB[clean] ?? generateFallbackData(clean)
   return {
     ticker: clean,
-    initial: clean[0],
+    initial: clean ? clean[0] : '?',
     name: db.name,
     price: db.price,
     change: db.change,
@@ -357,7 +357,7 @@ export function getDummyStock(ticker: string): Stock {
 }
 
 export function getDummyForecast(ticker: string, range: string): ForecastData {
-  const clean = ticker.toUpperCase()
+  const clean = (ticker || '').toUpperCase()
   const db = TICKER_DB[clean] ?? generateFallbackData(clean)
   return {
     title: 'Generative AI Forecast',
@@ -367,7 +367,7 @@ export function getDummyForecast(ticker: string, range: string): ForecastData {
     yMin: db.yMin,
     yMax: db.yMax,
     yTicks: db.yTicks,
-    xLabels: range === '1Y' 
+    xLabels: range === '1Y'
       ? ['Jan', 'Mar', 'Mei', 'Today', 'Agt', 'Okt', 'Des']
       : ['Jan', 'Feb', 'Mar', 'Today', 'Apr', 'Mei'],
     actual: db.actual,
@@ -375,14 +375,14 @@ export function getDummyForecast(ticker: string, range: string): ForecastData {
     ciUpper: db.ciUpper,
     ciLower: db.ciLower,
     volume: Array.from({ length: 10 }, (_, i) => ({
-      v: Math.abs((i + 1) * 7 + (clean.charCodeAt(0) % 20)) % 100,
+      v: Math.abs((i + 1) * 7 + ((clean ? clean.charCodeAt(0) : 0) % 20)) % 100,
       dir: i % 2 === 0 ? 'up' : 'down'
     }))
   }
 }
 
 export function getDummyTarget(ticker: string): TargetData {
-  const clean = ticker.toUpperCase()
+  const clean = (ticker || '').toUpperCase()
   const db = TICKER_DB[clean] ?? generateFallbackData(clean)
   return {
     title: 'Target Harga AI (30H)',
@@ -400,7 +400,7 @@ export function getDummyTarget(ticker: string): TargetData {
 }
 
 export function getDummyKeyLevels(ticker: string): KeyLevel[] {
-  const clean = ticker.toUpperCase()
+  const clean = (ticker || '').toUpperCase()
   const db = TICKER_DB[clean] ?? generateFallbackData(clean)
   const basePriceNum = parseInt(db.price.replace(/[^\d]/g, ''))
   return [
@@ -411,13 +411,13 @@ export function getDummyKeyLevels(ticker: string): KeyLevel[] {
 }
 
 export function getDummySentiment(ticker: string): SentimentItem[] {
-  const clean = ticker.toUpperCase()
+  const clean = (ticker || '').toUpperCase()
   const db = TICKER_DB[clean] ?? generateFallbackData(clean)
   return db.sentiment
 }
 
 export function getDummySynthesis(ticker: string): SynthesisData {
-  const clean = ticker.toUpperCase()
+  const clean = (ticker || '').toUpperCase()
   const db = TICKER_DB[clean] ?? generateFallbackData(clean)
   return {
     title: 'AI Synthesis',
@@ -426,7 +426,7 @@ export function getDummySynthesis(ticker: string): SynthesisData {
 }
 
 export function getDummyNews(ticker: string): NewsItem[] {
-  const clean = ticker.toUpperCase()
+  const clean = (ticker || '').toUpperCase()
   const db = TICKER_DB[clean] ?? generateFallbackData(clean)
   return db.news
 }
