@@ -34,11 +34,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <nav className="nav">
         {NAV_ITEMS.map(item => {
           const active = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
-          const href = item.id === 'watchlists' ? '/watchlist' : item.id === 'evaluasi' ? '/evaluasi' : item.href
           return (
             <Link 
               key={item.id} 
-              to={href} 
+              to={item.href} 
               className={`nav-item${active ? ' active' : ''}`}
               onClick={handleNavClick}
             >
