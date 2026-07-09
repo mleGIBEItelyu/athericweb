@@ -1,6 +1,6 @@
 import type { ForecastData, KeyLevel } from '@/types'
 
-const W = 1000, L = 56, R = 150
+const W = 1000, L = 85, R = 150
 
 function chartX(f: ForecastData, i: number) {
   return L + ((W - L - R) * i) / (f.actual.length + f.forecast.length - 1)
@@ -12,7 +12,7 @@ export function ForecastChart({ forecast: f, keyLevels }: Props) {
   const H = 380, padT = 18, padB = 30
   const ih = H - padT - padB
   const off = f.actual.length - 1
-  const yAt = (v: number) => padT + ih * (1 - (v - f.yMin) / (f.yMax - f.yMin))
+  const yAt = (v: number) => padT + (ih - 60) * (1 - (v - f.yMin) / (f.yMax - f.yMin))
   const xAt = (i: number) => chartX(f, i)
   const splitX = xAt(off)
 
@@ -28,21 +28,21 @@ export function ForecastChart({ forecast: f, keyLevels }: Props) {
     ' Z'
 
   const money = (v: number) => 'Rp ' + v.toLocaleString('id-ID')
-  const klColor: Record<string, string> = { up: '#34d399', flat: '#e7eaf1', down: '#f0564b' }
+  const klColor: Record<string, string> = { up: 'var(--green)', flat: 'var(--text-dim)', down: 'var(--red)' }
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" overflow="visible" role="img" aria-label={f.title}>
       <defs>
         <linearGradient id="ciGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#28d2e6" stopOpacity="0.12"/>
-          <stop offset="100%" stopColor="#28d2e6" stopOpacity="0"/>
+          <stop offset="0%" stopColor="var(--cyan)" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="var(--cyan)" stopOpacity="0" />
         </linearGradient>
       </defs>
 
       {/* Grid lines and Y axis */}
       {f.yTicks.map(t => (
         <g key={t}>
-          <line x1={L} y1={yAt(t)} x2={W - R} y2={yAt(t)} className="grid-line"/>
+          <line x1={L} y1={yAt(t)} x2={W - R} y2={yAt(t)} className="grid-line" />
           <text x={L - 12} y={yAt(t) + 4} className="axis-y">{money(t)}</text>
         </g>
       ))}
@@ -58,7 +58,7 @@ export function ForecastChart({ forecast: f, keyLevels }: Props) {
       {/* Volume bars (integrated backdrop) */}
       {f.volume && (() => {
         const maxVol = Math.max(...f.volume.map(v => v.v), 1)
-        const volMaxH = 45 // Max height for volume bars inside the main chart
+        const volMaxH = 35 // Max height for volume bars inside the main chart
         return (
           <g>
             <text x={L - 12} y={H - padB - 36} className="axis-y" style={{ opacity: 0.4 }}>Vol</text>
@@ -75,7 +75,7 @@ export function ForecastChart({ forecast: f, keyLevels }: Props) {
                   height={h}
                   rx={1}
                   className={`vol-bar vol-${bar.dir}`}
-                  style={{ opacity: 0.15, pointerEvents: 'none' }}
+                  style={{ opacity: 0.08, pointerEvents: 'none' }}
                 />
               )
             })}
@@ -84,10 +84,10 @@ export function ForecastChart({ forecast: f, keyLevels }: Props) {
       })()}
 
       {/* CI cone */}
-      <path d={ciArea} fill="url(#ciGrad)"/>
+      <path d={ciArea} fill="url(#ciGrad)" />
 
       {/* Split line */}
-      <line x1={splitX} y1={padT} x2={splitX} y2={H - padB} className="split-line"/>
+      <line x1={splitX} y1={padT} x2={splitX} y2={H - padB} className="split-line" />
       <text x={splitX} y={padT - 5} className="split-label" textAnchor="middle">Forecast Start</text>
 
       {/* Key Level lines */}
@@ -99,21 +99,21 @@ export function ForecastChart({ forecast: f, keyLevels }: Props) {
         const col = klColor[item.tone]
         return (
           <g key={item.label}>
-            <line x1={L} y1={y} x2={W - R} y2={y} stroke={col} strokeWidth={1} strokeDasharray="4 6" opacity={0.45}/>
-            <circle cx={W - R} cy={y} r={3} fill={col}/>
+            <line x1={L} y1={y} x2={W - R} y2={y} stroke={col} strokeWidth={1} strokeDasharray="3 5" opacity={0.25} />
+            <circle cx={W - R} cy={y} r={3} fill={col} />
             <text x={W - R + 10} y={y + 4} className={`kl-label kl-${item.tone}`}>{item.label} {item.value}</text>
           </g>
         )
       })}
 
       {/* Actual price line */}
-      <path d={linePath(f.actual, 0)} fill="none" stroke="#3b6ef6" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d={linePath(f.actual, 0)} fill="none" stroke="var(--blue)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
 
       {/* Forecast line */}
-      <path d={linePath(f.forecast, off)} fill="none" stroke="#28d2e6" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="2 8"/>
+      <path d={linePath(f.forecast, off)} fill="none" stroke="var(--cyan)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 4" />
 
       {/* Dot at last actual (forecast start) */}
-      <circle cx={xAt(off)} cy={yAt(f.actual[off])} r={4} fill="#28d2e6"/>
+      <circle cx={xAt(off)} cy={yAt(f.actual[off])} r={4} fill="var(--cyan)" />
 
       {/* Dot + label at last forecast point */}
       {(() => {
@@ -122,8 +122,8 @@ export function ForecastChart({ forecast: f, keyLevels }: Props) {
         const fy = yAt(f.forecast[f.forecast.length - 1])
         return (
           <g>
-            <circle cx={fx} cy={fy} r={4} fill="#28d2e6" stroke="rgba(10,14,23,0.8)" strokeWidth={1.5}/>
-            <text x={fx - 10} y={fy - 10} fill="#28d2e6" fontSize={12} fontWeight={600} textAnchor="end" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            <circle cx={fx} cy={fy} r={4} fill="var(--cyan)" stroke="rgba(10,14,23,0.8)" strokeWidth={1.5} />
+            <text x={fx - 10} y={fy - 10} fill="var(--cyan)" fontSize={12} fontWeight={600} textAnchor="end" style={{ fontVariantNumeric: 'tabular-nums' }}>
               Forecast {money(f.forecast[f.forecast.length - 1])}
             </text>
           </g>
