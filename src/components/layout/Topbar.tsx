@@ -59,6 +59,8 @@ export function Topbar({ onSearch, onMenuClick }: Props) {
     setShowDropdown(false)
   }
 
+  const [profileOpen, setProfileOpen] = useState(false)
+
   return (
     <header className="topbar">
       {/* Hamburger button — shown via CSS class below 1024px */}
@@ -136,10 +138,61 @@ export function Topbar({ onSearch, onMenuClick }: Props) {
             </div>
           )}
         </div>
-        <div className="avatar">
+        <div 
+          className="avatar" 
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+          onClick={() => setProfileOpen(true)}
+        >
           <img src="/assets/avatar.svg" alt="User avatar" />
         </div>
       </div>
+
+      {profileOpen && (
+        <div 
+          onClick={() => setProfileOpen(false)}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 999,
+          }}
+        >
+          <div 
+            onClick={e => e.stopPropagation()}
+            className="card"
+            style={{
+              padding: '32px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center',
+              width: '320px', gap: '16px', position: 'relative', border: '1px solid rgba(255,255,255,0.1)',
+              background: 'var(--panel)',
+            }}
+          >
+            <button 
+              onClick={() => setProfileOpen(false)}
+              style={{
+                position: 'absolute', top: '12px', right: '16px',
+                fontSize: '20px', color: 'var(--text-mute)', cursor: 'pointer',
+                background: 'none', border: 'none', padding: '4px',
+              }}
+            >
+              ×
+            </button>
+            <div style={{
+              width: '100px', height: '100px', borderRadius: '50%',
+              overflow: 'hidden', border: '3px solid var(--blue)',
+              boxShadow: '0 0 20px rgba(79,125,255,0.4)',
+            }}>
+              <img src="/assets/avatar.svg" alt="User avatar large" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)' }}>Deva</div>
+              <div style={{ fontSize: '12.5px', color: 'var(--text-dim)', marginTop: '4px' }}>deva@atheric.ai</div>
+              <div className="pill buy" style={{ display: 'inline-block', fontSize: '10px', padding: '2px 8px', marginTop: '12px' }}>
+                Premium AI Member
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

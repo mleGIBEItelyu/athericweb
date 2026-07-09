@@ -198,7 +198,7 @@ export function ShareModal({ ticker, stockName, price, change, dir, onClose }: P
         <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
           {/* Primary action row */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div className="share-action-grid">
             <button
               onClick={downloadImage}
               disabled={!screenshot}
@@ -242,7 +242,7 @@ export function ShareModal({ ticker, stockName, price, change, dir, onClose }: P
           </div>
 
           {/* Social platform grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+          <div className="share-social-grid">
             {SOCIALS.map(s => (
               <button
                 key={s.id}
