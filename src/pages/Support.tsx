@@ -78,9 +78,9 @@ export function Support() {
         <div className="page-sub">Kirim kendala teknis, masukan perbaikan model, atau tanyakan perihal integrasi API.</div>
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div className="support-layout">
         {/* Left Side: Status & FAQ */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '240px', width: '100%', maxWidth: '300px', flexShrink: 0 }}>
+        <div className="support-sidebar">
           {/* Status Box */}
           <div className="card" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
@@ -115,13 +115,13 @@ export function Support() {
         </div>
 
         {/* Right Side: Ticket Form */}
-        <div className="card" style={{ flex: 1, minWidth: 0, padding: '20px' }}>
+        <div className="card support-form">
           <h2 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', paddingBottom: '12px', borderBottom: '1px solid var(--border)', marginBottom: '20px' }}>
             Kirim Tiket Masukan
           </h2>
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div className="support-form-grid">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
                 <label className="stat-label" style={{ fontSize: '11.5px', fontWeight: 600 }}>Nama Lengkap</label>
                 <input

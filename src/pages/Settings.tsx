@@ -63,11 +63,11 @@ function sendBrowserNotif(title: string, body: string) {
 
 export function Settings() {
   const saved0 = loadSettings()
-  const location  = useLocation()
-  const navigate  = useNavigate()
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const VALID_TABS = ['general', 'display', 'notifications']
-  const hashTab   = location.hash.replace('#', '')
+  const VALID_TABS = ['general', 'display', 'notifications', 'account']
+  const hashTab = location.hash.replace('#', '')
   const activeTab = VALID_TABS.includes(hashTab) ? hashTab : 'general'
 
   function setActiveTab(tab: string) {
@@ -144,6 +144,7 @@ export function Settings() {
     { id: 'general', label: 'Umum & AI Model' },
     { id: 'display', label: 'Tampilan (Theme)' },
     { id: 'notifications', label: 'Notifikasi Alert' },
+    { id: 'account', label: 'Akun & Keamanan' },
   ]
 
   const themes = [
@@ -160,26 +161,14 @@ export function Settings() {
         <div className="page-sub">Kustomisasi parameter model AI, rentang kepercayaan proyeksi, dan preferensi tampilan.</div>
       </div>
 
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div className="settings-layout">
         {/* Left: Tab Nav */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: '160px', flexShrink: 0, width: '100%', maxWidth: '200px' }}>
+        <div className="settings-tabs">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              style={{
-                padding: '9px 14px',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '13px',
-                fontWeight: 500,
-                textAlign: 'left',
-                transition: 'background .15s, color .15s',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                background: activeTab === tab.id ? 'var(--blue-soft)' : 'transparent',
-                color: activeTab === tab.id ? 'var(--blue-bright)' : 'var(--text-dim)',
-                border: activeTab === tab.id ? '1px solid rgba(79,125,255,0.3)' : '1px solid transparent',
-              }}
+              className={`settings-tab-btn${activeTab === tab.id ? ' active' : ''}`}
             >
               {tab.label}
             </button>
@@ -187,34 +176,34 @@ export function Settings() {
         </div>
 
         {/* Right: Content Panel */}
-        <div className="card" style={{ flex: 1, minWidth: 0, padding: '20px' }}>
+        <div className="card settings-panel">
 
           {/* ── General Tab ── */}
           {activeTab === 'general' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <h2 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              <h2 className="settings-section-title">
                 Konfigurasi Model AI
               </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label className="stat-label" style={{ fontSize: '11.5px', fontWeight: 600 }}>AI Forecasting Engine</label>
+              <div className="settings-form-group">
+                <label>AI Forecasting Engine</label>
                 <Select value={aiModel} onChange={setAiModel} options={AI_OPTIONS} />
-                <span style={{ fontSize: '11px', color: 'var(--text-mute)' }}>Model Generative AI menganalisis data numerik dan sentimen berita secara simultan.</span>
+                <span className="hint">Model Generative AI menganalisis data numerik dan sentimen berita secara simultan.</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label className="stat-label" style={{ fontSize: '11.5px', fontWeight: 600 }}>Confidence Interval (CI)</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
+              <div className="settings-form-group">
+                <label>Confidence Interval (CI)</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
                   {['90', '95', '99'].map(val => (
                     <button
                       key={val}
                       onClick={() => setConfidence(val)}
                       style={{
-                        flex: 1, padding: '9px', fontSize: '13px', fontWeight: 600,
+                        flex: 1, padding: '12px', fontSize: '13.5px', fontWeight: 600,
                         borderRadius: 'var(--radius-sm)', cursor: 'pointer',
-                        transition: 'background .15s, color .15s, border-color .15s',
+                        transition: 'all .15s ease',
                         background: confidence === val ? 'var(--blue-soft)' : 'var(--bg-2)',
-                        border: confidence === val ? '1px solid var(--blue)' : '1px solid var(--border)',
+                        border: confidence === val ? '1px solid var(--blue)' : '1px solid var(--border-strong)',
                         color: confidence === val ? 'var(--blue-bright)' : 'var(--text-dim)',
                       }}
                     >
@@ -222,42 +211,38 @@ export function Settings() {
                     </button>
                   ))}
                 </div>
-                <span style={{ fontSize: '11px', color: 'var(--text-mute)' }}>Batas keyakinan model membatasi rentang visualisasi area prediksi (Confidence Cone) di chart.</span>
+                <span className="hint">Batas keyakinan model membatasi rentang visualisasi area prediksi (Confidence Cone) di chart.</span>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label className="stat-label" style={{ fontSize: '11.5px', fontWeight: 600 }}>Indeks Saham Utama (Topbar)</label>
+              <div className="settings-form-group">
+                <label>Indeks Saham Utama (Topbar)</label>
                 <Select value={defaultIndex} onChange={setDefaultIndex} options={INDEX_OPTIONS} />
+                <span className="hint">Indeks utama yang ditampilkan secara real-time di bar bagian atas layar Anda.</span>
               </div>
             </div>
           )}
 
           {/* ── Display Tab ── */}
           {activeTab === 'display' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <h2 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              <h2 className="settings-section-title">
                 Tampilan &amp; Tema
               </h2>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label className="stat-label" style={{ fontSize: '11.5px', fontWeight: 600 }}>Tema Terminal</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
+              <div className="settings-form-group">
+                <label>Tema Terminal</label>
+                <div className="theme-grid">
                   {themes.map(t => (
                     <button
                       key={t.id}
                       onClick={() => handleThemeChange(t.id)}
-                      style={{
-                        padding: '14px', borderRadius: 'var(--radius-sm)', textAlign: 'left', cursor: 'pointer',
-                        transition: 'background .15s, border-color .15s',
-                        background: theme === t.id ? 'var(--blue-soft)' : 'var(--bg-2)',
-                        border: theme === t.id ? '1px solid var(--blue)' : '1px solid var(--border)',
-                      }}
+                      className={`theme-card${theme === t.id ? ' active' : ''}`}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                         <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: t.dot, flexShrink: 0, display: 'block' }} />
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: theme === t.id ? 'var(--blue-bright)' : 'var(--text)' }}>{t.label}</span>
+                        <span style={{ fontSize: '13.5px', fontWeight: 700, color: theme === t.id ? 'var(--blue-bright)' : 'var(--text)' }}>{t.label}</span>
                       </div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-mute)' }}>{t.desc}</div>
+                      <div style={{ fontSize: '11.5px', color: 'var(--text-mute)', lineHeight: 1.4 }}>{t.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -267,15 +252,15 @@ export function Settings() {
 
           {/* ── Notifications Tab ── */}
           {activeTab === 'notifications' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <h2 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text)', paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              <h2 className="settings-section-title">
                 Pengaturan Notifikasi
               </h2>
 
               {/* Permission status banner */}
               <div style={{
-                display: 'flex', alignItems: 'center', gap: '10px',
-                padding: '10px 14px', borderRadius: 'var(--radius-sm)',
+                display: 'flex', alignItems: 'center', gap: '12px',
+                padding: '14px 18px', borderRadius: 'var(--radius-sm)',
                 background: notifPermission === 'granted'
                   ? 'rgba(46,194,122,0.08)' : notifPermission === 'denied'
                     ? 'rgba(240,86,75,0.08)' : 'rgba(217,161,58,0.08)',
@@ -288,105 +273,197 @@ export function Settings() {
                   background: notifPermission === 'granted' ? 'var(--green)' : notifPermission === 'denied' ? 'var(--red)' : 'var(--amber)',
                 }} />
                 <div>
-                  <span style={{
-                    fontSize: '12px', fontWeight: 700,
+                  <div style={{
+                    fontSize: '12.5px', fontWeight: 700,
                     color: notifPermission === 'granted' ? 'var(--green)' : notifPermission === 'denied' ? 'var(--red)' : 'var(--amber)',
                   }}>
                     {notifPermission === 'granted' ? 'Notifikasi browser diizinkan' : notifPermission === 'denied' ? 'Notifikasi browser diblokir — ubah di pengaturan browser' : 'Izin notifikasi belum diberikan'}
-                  </span>
+                  </div>
                   {notifPermission !== 'granted' && notifPermission !== 'denied' && (
-                    <span style={{ fontSize: '11px', color: 'var(--text-mute)', marginLeft: '6px' }}>— aktifkan salah satu toggle di bawah untuk meminta izin</span>
+                    <div style={{ fontSize: '11px', color: 'var(--text-mute)', marginTop: '3px' }}>Aktifkan salah satu toggle di bawah untuk meminta izin browser</div>
                   )}
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+              <div className="notif-settings-list">
                 {NOTIF_ITEMS.map((item, idx) => {
                   const isOn = notifEnabled[item.key]
                   return (
-                  <div
-                    key={item.key}
-                    style={{
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px',
-                      padding: '16px 0',
-                      borderBottom: idx < NOTIF_ITEMS.length - 1 ? '1px solid var(--border)' : 'none',
-                    }}
-                  >
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>{item.title}</span>
+                    <div key={item.key} className="notif-settings-item">
+                      <div className="notif-item-content">
+                        <div className="notif-item-title-row">
+                          <span className="notif-item-title">{item.title}</span>
+                          {isOn && notifPermission === 'granted' && (
+                            <span style={{
+                              fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '999px',
+                              background: 'rgba(46,194,122,0.12)', border: '1px solid rgba(46,194,122,0.3)', color: 'var(--green)'
+                            }}>
+                              AKTIF
+                            </span>
+                          )}
+                        </div>
+                        <div className="notif-item-desc">{item.desc}</div>
                         {isOn && notifPermission === 'granted' && (
-                          <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '999px',
-                            background: 'rgba(46,194,122,0.12)', border: '1px solid rgba(46,194,122,0.3)', color: 'var(--green)' }}>
-                            AKTIF
-                          </span>
+                          <button
+                            type="button"
+                            onClick={() => sendTestNotif(item)}
+                            style={{
+                              marginTop: '12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+                              padding: '5px 12px', borderRadius: '6px',
+                              background: 'var(--blue-soft)', border: '1px solid rgba(79,125,255,0.25)',
+                              color: 'var(--blue-bright)', display: 'inline-flex', alignItems: 'center', gap: '5px',
+                              transition: 'all .15s ease',
+                            }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'rgba(79,125,255,0.15)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'var(--blue-soft)'}
+                          >
+                            <span>▶</span> Kirim Test Notifikasi
+                          </button>
                         )}
                       </div>
-                      <div style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '4px', lineHeight: 1.5 }}>{item.desc}</div>
-                      {isOn && notifPermission === 'granted' && (
-                        <button
-                          type="button"
-                          onClick={() => sendTestNotif(item)}
-                          style={{
-                            marginTop: '8px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
-                            padding: '4px 10px', borderRadius: '6px',
-                            background: 'var(--blue-soft)', border: '1px solid rgba(79,125,255,0.25)',
-                            color: 'var(--blue-bright)', display: 'inline-flex', alignItems: 'center', gap: '5px',
-                          }}
-                        >
-                          <span>▶</span> Kirim Test Notifikasi
-                        </button>
-                      )}
+                      {/* Toggle switch */}
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={isOn}
+                        onClick={() => handleNotifToggle(item.key, !isOn)}
+                        style={{
+                          flexShrink: 0,
+                          width: '40px', height: '22px',
+                          borderRadius: '999px',
+                          border: 'none',
+                          cursor: notifPermission === 'denied' ? 'not-allowed' : 'pointer',
+                          background: isOn && notifPermission === 'granted' ? 'var(--blue)' : 'var(--border-strong)',
+                          position: 'relative',
+                          transition: 'background .2s',
+                          marginTop: '2px',
+                          opacity: notifPermission === 'denied' ? 0.4 : 1,
+                        }}
+                        disabled={notifPermission === 'denied'}
+                      >
+                        <span style={{
+                          position: 'absolute', top: '3px',
+                          left: isOn && notifPermission === 'granted' ? '20px' : '3px',
+                          width: '16px', height: '16px',
+                          borderRadius: '50%',
+                          background: '#fff',
+                          transition: 'left .2s',
+                          display: 'block',
+                        }} />
+                      </button>
                     </div>
-                    {/* Toggle switch */}
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={isOn}
-                      onClick={() => handleNotifToggle(item.key, !isOn)}
-                      style={{
-                        flexShrink: 0,
-                        width: '40px', height: '22px',
-                        borderRadius: '999px',
-                        border: 'none',
-                        cursor: notifPermission === 'denied' ? 'not-allowed' : 'pointer',
-                        background: isOn && notifPermission === 'granted' ? 'var(--blue)' : 'var(--border-strong)',
-                        position: 'relative',
-                        transition: 'background .2s',
-                        marginTop: '2px',
-                        opacity: notifPermission === 'denied' ? 0.4 : 1,
-                      }}
-                      disabled={notifPermission === 'denied'}
-                    >
-                      <span style={{
-                        position: 'absolute', top: '3px',
-                        left: isOn && notifPermission === 'granted' ? '20px' : '3px',
-                        width: '16px', height: '16px',
-                        borderRadius: '50%',
-                        background: '#fff',
-                        transition: 'left .2s',
-                        display: 'block',
-                      }} />
-                    </button>
-                  </div>
                   )
                 })}
               </div>
             </div>
           )}
 
+          {/* ── Account Tab ── */}
+          {activeTab === 'account' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+              <div>
+                <h2 className="settings-section-title">
+                  Ganti Password
+                </h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', marginTop: '16px', maxWidth: '400px' }}>
+                  <div className="settings-form-group" style={{ marginBottom: 0 }}>
+                    <label>Password Sekarang</label>
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div className="settings-form-group" style={{ marginBottom: 0 }}>
+                    <label>Password Baru</label>
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <div className="settings-form-group" style={{ marginBottom: 0 }}>
+                    <label>Konfirmasi Password Baru</label>
+                    <input
+                      type="password"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  <button
+                    onClick={() => toast.success('Password diperbarui', 'Password akun Anda berhasil diganti.')}
+                    className="stock-btn primary"
+                    style={{ alignSelf: 'flex-start', marginTop: '6px', cursor: 'pointer', height: '42px', padding: '0 20px' }}
+                  >
+                    Perbarui Password
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h2 className="settings-section-title">
+                  Sesi Akun
+                </h2>
+                <div style={{ marginTop: '16px' }}>
+                  <p style={{ fontSize: '13px', color: 'var(--text-dim)', marginBottom: '16px', lineHeight: 1.6 }}>
+                    Keluar dari sesi terminal aktif Anda di perangkat ini. Anda perlu memasukkan kredensial Anda kembali untuk masuk.
+                  </p>
+                  <button
+                    onClick={() => {
+                      toast.warning('Anda telah keluar', 'Mengarahkan kembali ke sesi tamu...');
+                      setTimeout(() => navigate('/'), 1500)
+                    }}
+                    className="stock-btn"
+                    style={{
+                      cursor: 'pointer', background: 'rgba(255,255,255,0.05)',
+                      border: '1px solid var(--border-strong)', color: 'var(--text)',
+                      height: '42px', padding: '0 20px',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                  >
+                    Logout / Keluar
+                  </button>
+                </div>
+              </div>
+
+              <div className="settings-danger-zone">
+                <h3 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--red)', display: 'flex', alignItems: 'center', gap: '8px', margin: 0 }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--red)' }} />
+                  Zona Bahaya: Hapus Akun
+                </h3>
+                <p style={{ fontSize: '12.5px', color: 'var(--text-dim)', marginTop: '10px', marginBottom: '20px', lineHeight: 1.6 }}>
+                  Tindakan ini tidak dapat dibatalkan. Seluruh data transaksi, watchlist, preferensi analisis AI, dan konfigurasi terminal Anda akan dihapus secara permanen dari server kami.
+                </p>
+                <button
+                  onClick={() => {
+                    const confirmDel = window.confirm('Apakah Anda yakin ingin menghapus akun? Seluruh data akan hilang secara permanen.');
+                    if (confirmDel) {
+                      toast.error('Akun Dihapus', 'Seluruh data Anda telah dihapus secara permanen.');
+                      localStorage.clear();
+                      setTimeout(() => window.location.reload(), 1500);
+                    }
+                  }}
+                  className="stock-btn sell"
+                  style={{ cursor: 'pointer', height: '42px', padding: '0 20px' }}
+                >
+                  Hapus Akun Permanen
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Save Button */}
-          <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end' }}>
-            {savedFeedback ? (
-              <span className="pill buy" style={{ padding: '8px 16px', fontSize: '12.5px' }}>
-                Pengaturan Disimpan!
-              </span>
-            ) : (
-              <button onClick={handleSave} className="stock-btn primary" style={{ cursor: 'pointer' }}>
-                Simpan Perubahan
-              </button>
-            )}
-          </div>
+          {activeTab !== 'account' && (
+            <div style={{ marginTop: '32px', paddingTop: '20px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'flex-end' }}>
+              {savedFeedback ? (
+                <span className="pill buy" style={{ padding: '10px 20px', fontSize: '13px' }}>
+                  Pengaturan Disimpan!
+                </span>
+              ) : (
+                <button onClick={handleSave} className="stock-btn primary" style={{ cursor: 'pointer', height: '42px', padding: '0 24px' }}>
+                  Simpan Perubahan
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
