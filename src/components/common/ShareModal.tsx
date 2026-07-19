@@ -70,7 +70,7 @@ export function ShareModal({ ticker, stockName, price, change, dir, onClose }: P
   const overlayRef = useRef<HTMLDivElement>(null)
 
   const pageUrl = window.location.href
-  const shareText = `📊 ${ticker} — ${stockName}\n💰 ${price}  ${dir === 'up' ? '▲' : '▼'} ${change}\n\nDianalisis oleh Atheric AI Terminal`
+  const shareText = `📊 ${ticker} - ${stockName}\n💰 ${price}  ${dir === 'up' ? '▲' : '▼'} ${change}\n\nDianalisis oleh Atheric AI Terminal`
 
   // Capture screenshot on mount
   useEffect(() => {
@@ -124,7 +124,7 @@ export function ShareModal({ ticker, stockName, price, change, dir, onClose }: P
     const file = new File([imageBlob], `atheric-${ticker}.png`, { type: 'image/png' })
     if (navigator.share && navigator.canShare({ files: [file] })) {
       try {
-        await navigator.share({ title: `${ticker} — Atheric AI`, text: shareText, files: [file] })
+        await navigator.share({ title: `${ticker} - Atheric AI`, text: shareText, files: [file] })
         toast.success('Berhasil dibagikan!', '')
       } catch { /* user cancelled */ }
     } else {
@@ -164,7 +164,7 @@ export function ShareModal({ ticker, stockName, price, change, dir, onClose }: P
         }}>
           <div>
             <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--text)' }}>Bagikan Analisis</div>
-            <div style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '2px' }}>{ticker} — {stockName}</div>
+            <div style={{ fontSize: '11.5px', color: 'var(--text-dim)', marginTop: '2px' }}>{ticker} - {stockName}</div>
           </div>
           <button
             onClick={onClose}

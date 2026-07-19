@@ -1,18 +1,125 @@
+/**
+ * SynthesisCard.tsx — Auto-generate AI Synthesis via RAG saat mount
+ */
+
+import { useState, useEffect, useRef } from 'react'
 import { useSynthesis } from '@/hooks/useStock'
+import { generateSynthesis, hasGeminiKey } from '@/services/rag'
+import { SparkIcon } from '@/components/common/icons'
 
 interface Props { ticker: string }
 
 export function SynthesisCard({ ticker }: Props) {
-  const { data } = useSynthesis(ticker)
+  const { data: staticData } = useSynthesis(ticker)
+  const [ragParagraphs, setRagParagraphs] = useState<string[] | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const generatedRef = useRef<string | null>(null) // track ticker yang sudah di-generate
+
+  const hasKey = hasGeminiKey()
+
+  // Auto-generate saat mount atau ticker berganti (hanya jika API key ada)
+  useEffect(() => {
+    if (!hasKey) return
+    if (generatedRef.current === ticker) return // skip jika sudah pernah generate ticker ini
+
+    generatedRef.current = ticker
+    setRagParagraphs(null)
+    setError(null)
+    setIsGenerating(true)
+
+    generateSynthesis(ticker)
+      .then(result => setRagParagraphs(result))
+      .catch(err => {
+        const msg = err instanceof Error ? err.message : 'Terjadi kesalahan'
+        setError(msg)
+        generatedRef.current = null // allow retry
+      })
+      .finally(() => setIsGenerating(false))
+  }, [ticker, hasKey])
+
+  const paragraphs = ragParagraphs ?? staticData?.paragraphs ?? []
+  const isRag = Boolean(ragParagraphs)
 
   return (
     <section className="card panel-card synth-card">
-      <div className="card-title">{data?.title ?? 'AI Synthesis'}</div>
-      <div className="synth-scroll">
-        {data?.paragraphs.map((p, i) => (
-          <p key={i} className="synth-para">{p}</p>
-        ))}
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+        <span className="card-title" style={{ margin: 0 }}>AI Synthesis</span>
+        {isRag && !isGenerating && (
+          <span style={{
+            fontSize: '9.5px', fontWeight: 700, padding: '2px 7px', borderRadius: '999px',
+            background: 'var(--blue-soft)', border: '1px solid rgba(79,125,255,0.25)',
+            color: 'var(--blue-bright)', letterSpacing: '0.04em', textTransform: 'uppercase',
+            display: 'flex', alignItems: 'center', gap: '4px',
+          }}>
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3v3M12 18v3M5 12H2M22 12h-3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" />
+              <circle cx="12" cy="12" r="3.2" />
+            </svg>
+            RAG · Gemini
+          </span>
+        )}
+        {isGenerating && (
+          <span style={{
+            fontSize: '10px', color: 'var(--text-mute)', display: 'flex', alignItems: 'center', gap: '5px',
+          }}>
+            <span style={{ width: '10px', height: '10px', border: '1.5px solid var(--border-strong)', borderTopColor: 'var(--blue)', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
+            Generating…
+          </span>
+        )}
       </div>
+
+      {/* Error state */}
+      {error && (
+        <div style={{
+          padding: '10px 12px', borderRadius: 'var(--radius-sm)', marginBottom: '12px',
+          background: 'rgba(240,86,75,0.08)', border: '1px solid rgba(240,86,75,0.2)',
+          fontSize: '12px', color: 'var(--red)', lineHeight: 1.5,
+        }}>
+          ⚠ {error}
+        </div>
+      )}
+
+      {/* Skeleton loading */}
+      {isGenerating && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {[100, 88, 94, 72, 100, 82, 90, 65].map((w, i) => (
+            <div key={i} style={{
+              height: '12px', borderRadius: '6px', width: `${w}%`,
+              background: 'var(--border-strong)',
+              animation: 'skeletonPulse 1.4s ease-in-out infinite',
+              animationDelay: `${i * 0.08}s`,
+            }} />
+          ))}
+        </div>
+      )}
+
+      {/* Content */}
+      {!isGenerating && (
+        <div className="synth-scroll">
+          {paragraphs.map((p, i) => (
+            <p key={`${ticker}-${i}`} className="synth-para" style={{
+              animation: isRag ? `synthParaIn 0.4s ease ${i * 0.15}s both` : 'none',
+            }}>
+              {p}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {/* Footer disclaimer saat RAG */}
+      {isRag && !isGenerating && (
+        <div style={{
+          marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border)',
+          fontSize: '10.5px', color: 'var(--text-mute)', display: 'flex', alignItems: 'center', gap: '6px',
+        }}>
+          <span style={{ width: '12px', height: '12px', flexShrink: 0, color: 'var(--blue-bright)' }}>
+            <SparkIcon />
+          </span>
+          Generated by Gemini · Bukan saran investasi
+        </div>
+      )}
     </section>
   )
 }

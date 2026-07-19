@@ -24,7 +24,7 @@ export function Support() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    const subject = `[Atheric AI Support] ${CATEGORY_LABELS[category]} — dari ${name}`
+    const subject = `[Atheric AI Support] ${CATEGORY_LABELS[category]} - dari ${name}`
     const body = [
       `Kategori  : ${CATEGORY_LABELS[category]}`,
       `Nama      : ${name}`,
@@ -166,7 +166,7 @@ export function Support() {
             <div style={{ marginTop: '8px' }}>
               {submitted ? (
                 <div className="pill buy" style={{ display: 'block', textAlign: 'center', padding: '12px', fontSize: '13px', borderRadius: 'var(--radius-sm)', lineHeight: 1.5 }}>
-                  ✓ Email klien Anda terbuka — periksa dan klik Kirim untuk menyelesaikan laporan.
+                  ✓ Email klien Anda terbuka - periksa dan klik Kirim untuk menyelesaikan laporan.
                 </div>
               ) : (
                 <button

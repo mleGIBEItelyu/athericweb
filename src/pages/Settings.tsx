@@ -39,19 +39,19 @@ const NOTIF_ITEMS = [
     key: 'sentiment',
     title: 'Perubahan Sentimen Drastis',
     desc: 'Dapatkan pemberitahuan instan jika model mendeteksi perubahan sentimen dari bullish ke bearish.',
-    demo: { title: '⚠ Sentimen Berubah — BBCA', body: 'Model mendeteksi pergeseran sentimen dari Bullish ke Bearish pada BBCA. Harga mendekati support 9.400.' },
+    demo: { title: '⚠ Sentimen Berubah - BBCA', body: 'Model mendeteksi pergeseran sentimen dari Bullish ke Bearish pada BBCA. Harga mendekati support 9.400.' },
   },
   {
     key: 'keylevels',
     title: 'Emiten Watchlist Menyentuh Key Levels',
     desc: 'Kirim alert jika salah satu emiten watchlist mendekati level Resistance atau Support kunci.',
-    demo: { title: '📊 Key Level Alert — TLKM', body: 'TLKM menyentuh resistance kunci di Rp 3.720. Volume di atas rata-rata — waspadai breakout.' },
+    demo: { title: '📊 Key Level Alert - TLKM', body: 'TLKM menyentuh resistance kunci di Rp 3.720. Volume di atas rata-rata - waspadai breakout.' },
   },
   {
     key: 'news',
     title: 'Pembaruan Berita Prioritas Tinggi',
     desc: 'Alert khusus untuk berita dengan dampak tinggi (High impact news).',
-    demo: { title: '📰 High-Impact News — IHSG', body: 'Bank Indonesia menaikkan suku bunga acuan sebesar 25bps. Dampak tinggi terhadap sektor perbankan.' },
+    demo: { title: '📰 High-Impact News - IHSG', body: 'Bank Indonesia menaikkan suku bunga acuan sebesar 25bps. Dampak tinggi terhadap sektor perbankan.' },
   },
 ]
 
@@ -107,7 +107,7 @@ export function Settings() {
         toast.error('Izin ditolak', 'Aktifkan notifikasi di pengaturan browser Anda.')
         return
       }
-      sendBrowserNotif('Atheric AI — Notifikasi Aktif', 'Alert browser berhasil diaktifkan untuk terminal ini.')
+      sendBrowserNotif('Atheric AI - Notifikasi Aktif', 'Alert browser berhasil diaktifkan untuk terminal ini.')
       toast.success('Izin diberikan!', 'Browser notifications berhasil diaktifkan.')
     }
     setNotifEnabled(prev => ({ ...prev, [key]: wantOn }))
@@ -277,7 +277,7 @@ export function Settings() {
                     fontSize: '12.5px', fontWeight: 700,
                     color: notifPermission === 'granted' ? 'var(--green)' : notifPermission === 'denied' ? 'var(--red)' : 'var(--amber)',
                   }}>
-                    {notifPermission === 'granted' ? 'Notifikasi browser diizinkan' : notifPermission === 'denied' ? 'Notifikasi browser diblokir — ubah di pengaturan browser' : 'Izin notifikasi belum diberikan'}
+                    {notifPermission === 'granted' ? 'Notifikasi browser diizinkan' : notifPermission === 'denied' ? 'Notifikasi browser diblokir - ubah di pengaturan browser' : 'Izin notifikasi belum diberikan'}
                   </div>
                   {notifPermission !== 'granted' && notifPermission !== 'denied' && (
                     <div style={{ fontSize: '11px', color: 'var(--text-mute)', marginTop: '3px' }}>Aktifkan salah satu toggle di bawah untuk meminta izin browser</div>

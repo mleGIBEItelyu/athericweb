@@ -33,12 +33,12 @@ const EVAL_DATA: MonthEval[] = [
     total: 30, correct: 22, inRange: 18, avgError: '4,2%',
     bestTicker: 'BBCA', worstTicker: 'GOTO',
     strengths: [
-      'Akurasi arah (bullish/bearish) mencapai 73,3% — di atas rata-rata historis 68%',
+      'Akurasi arah (bullish/bearish) mencapai 73,3% - di atas rata-rata historis 68%',
       'Prediksi sektor perbankan sangat tepat: BBCA, BBRI, BMRI semua benar',
       'Confidence interval 90% valid untuk 60% saham yang diprediksi',
     ],
     weaknesses: [
-      'Sektor teknologi sangat meleset — GOTO dan BUKA error di atas 15%',
+      'Sektor teknologi sangat meleset - GOTO dan BUKA error di atas 15%',
       'Tidak menangkap shock sentimen eksternal (kebijakan suku bunga darurat BI)',
       'Overestimate volatilitas saham mid-cap selama 2 minggu pertama bulan',
     ],
@@ -63,12 +63,12 @@ const EVAL_DATA: MonthEval[] = [
     strengths: [
       'Sektor telekomunikasi diprediksi dengan presisi tinggi (error < 2%)',
       'Deteksi tren bearish IHSG pada minggu ke-3 akurat lebih awal 4 hari',
-      'Recall pada saham BUY recommendation 80% — tidak banyak yang terlewat',
+      'Recall pada saham BUY recommendation 80% - tidak banyak yang terlewat',
     ],
     weaknesses: [
       'Consumer goods sector meleset signifikan akibat data inflasi yang mengejutkan',
       'Model terlalu optimis pada recovery mid-cap pasca koreksi Mei',
-      'Akurasi range CI turun ke 46,7% — lebih rendah dari bulan sebelumnya',
+      'Akurasi range CI turun ke 46,7% - lebih rendah dari bulan sebelumnya',
       'Tidak memperhitungkan efek spillover dari market AS yang volatile',
     ],
     note: 'Koreksi tajam mid-month menurunkan akurasi secara keseluruhan.',
@@ -92,7 +92,7 @@ const EVAL_DATA: MonthEval[] = [
     strengths: [
       'GARCH sangat akurat dalam memprediksi volatilitas harian BMRI dan BBCA',
       'Confidence interval coverage rate tertinggi (63,3%) dalam 6 bulan terakhir',
-      'Stabil pada kondisi normal tanpa kejutan eksternal — baseline sangat kuat',
+      'Stabil pada kondisi normal tanpa kejutan eksternal - baseline sangat kuat',
     ],
     weaknesses: [
       'ARIMA gagal menangkap structural break akibat rilis laporan keuangan ASII',
@@ -122,13 +122,13 @@ const EVAL_DATA: MonthEval[] = [
       'Secara konsisten lebih baik dari baseline pada saham dengan high-autocorrelation',
     ],
     weaknesses: [
-      'Akurasi arah hanya 53,3% — hampir setara coin flip pada bulan ini',
+      'Akurasi arah hanya 53,3% - hampir setara coin flip pada bulan ini',
       'LSTM overfitting terhadap pola Q4 2024 yang tidak relevan di Q2 2025',
       'Training lag menyebabkan respons terlambat terhadap koreksi pasar April',
-      'Interpretabilitas rendah — tidak dapat dijelaskan kenapa prediksi tertentu meleset',
+      'Interpretabilitas rendah - tidak dapat dijelaskan kenapa prediksi tertentu meleset',
       'Komputasi mahal, update model tertunda 18 jam dari target SLA',
     ],
-    note: 'Bulan terlemah LSTM — kondisi pasar abnormal di luar distribusi training.',
+    note: 'Bulan terlemah LSTM - kondisi pasar abnormal di luar distribusi training.',
     details: [
       { ticker: 'BBCA', predicted: 'Rp 9.900', actual: 'Rp 10.050', dir: 'up', correct: true, inRange: true, error: '1,5%' },
       { ticker: 'BBRI', predicted: 'Rp 5.300', actual: 'Rp 4.800', dir: 'up', correct: false, inRange: false, error: '9,4%' },
@@ -210,7 +210,7 @@ export function Evaluasi() {
       <div className="page-head">
         <div className="page-title">EVALUASI MODEL</div>
         <div className="page-sub">
-          Perbandingan akurasi prediksi per bulan — arah harga, coverage confidence interval, dan analisis kelebihan/kekurangan masing-masing model AI.
+          Perbandingan akurasi prediksi per bulan - arah harga, coverage confidence interval, dan analisis kelebihan/kekurangan masing-masing model AI.
         </div>
       </div>
 
@@ -388,7 +388,7 @@ export function Evaluasi() {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '16px 20px', borderBottom: '1px solid var(--border)',
           }}>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>Detail Per Emiten — {data.month}</span>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text)' }}>Detail Per Emiten - {data.month}</span>
             <button
               onClick={() => setDetailOpen(o => !o)}
               style={{

@@ -20,7 +20,7 @@ export const INDICES: IndexData[] = [
 ]
 
 export const GLOSSARY: Glossary = {
-  'P/E': 'Seberapa mahal saham dibandingkan laba tahunannya — semakin tinggi berarti semakin mahal.',
+  'P/E': 'Seberapa mahal saham dibandingkan laba tahunannya - semakin tinggi berarti semakin mahal.',
   'EPS': 'Laba bersih perusahaan per lembar saham selama setahun terakhir.',
   'Div Yield': 'Dividen tahunan yang dibayarkan sebagai persentase dari harga saham.',
   '90% CI': 'Model memperkirakan harga akan berada di dalam rentang ini sekitar 9 dari 10 kali.',
@@ -101,7 +101,7 @@ const TICKER_DB: Record<string, {
     ],
     synthesis: [
       'BBCA saat ini berada dalam fase akumulasi dengan momentum teknikal yang kuat. Saham berhasil menembus resistensi kunci di Rp 9.250 didukung volume di atas rata-rata, mengkonfirmasi minat beli institusional. MACD menunjukkan sinyal bullish crossover, sementara RSI berada di zona netral-bullish dengan ruang yang cukup sebelum mencapai overbought. Target teknikal berikutnya terletak di Rp 10.000, dengan potensi ekstensi menuju Rp 10.500 apabila momentum terjaga.',
-      'Secara fundamental, BBCA mencatat pertumbuhan laba bersih 12% YoY dengan NIM terjaga di 5,9% dan NPL gross terkendali di 1,7% — angka yang melampaui rata-rata industri perbankan nasional. Risiko utama datang dari kebijakan suku bunga Bank Indonesia di kuartal mendatang yang berpotensi menekan margin intermediasi. Valuasi P/E 24,5x masih dapat dipertahankan selama pertumbuhan kredit tetap di atas 12% YoY dan kualitas aset tidak memburuk signifikan.',
+      'Secara fundamental, BBCA mencatat pertumbuhan laba bersih 12% YoY dengan NIM terjaga di 5,9% dan NPL gross terkendali di 1,7% - angka yang melampaui rata-rata industri perbankan nasional. Risiko utama datang dari kebijakan suku bunga Bank Indonesia di kuartal mendatang yang berpotensi menekan margin intermediasi. Valuasi P/E 24,5x masih dapat dipertahankan selama pertumbuhan kredit tetap di atas 12% YoY dan kualitas aset tidak memburuk signifikan.',
     ],
     news: [
       { headline: 'BBCA Cetak Laba Bersih Rp 48,6 T di Kuartal III 2024', source: 'Bisnis.com', time: '10:42', tag: 'High', tone: 'green' },
@@ -395,7 +395,7 @@ export function getDummyTarget(ticker: string): TargetData {
       { label: 'Risk / Reward', value: db.riskReward },
       { label: 'Confidence', value: db.confidence },
     ],
-    disclaimer: 'Untuk riset saja — bukan saran investasi.',
+    disclaimer: 'Untuk riset saja - bukan saran investasi.',
   }
 }
 
