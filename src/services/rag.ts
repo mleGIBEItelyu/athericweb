@@ -1,12 +1,3 @@
-/**
- * rag.ts — Retrieval-Augmented Generation core service
- *
- * Flow:
- *  1. Retriever: ambil data relevan dari dummy.ts (knowledge base)
- *  2. Prompt Builder: susun context string terstruktur
- *  3. Gemini API: generate analisis / jawaban berbasis context
- */
-
 import {
   getDummyStock,
   getDummyForecast,
@@ -18,15 +9,11 @@ import {
   INDICES,
 } from '@/data/dummy'
 
-// ─── Gemini API Config ────────────────────────────────────────────────────────
-
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY ?? ''
-const GEMINI_MODEL = 'gemini-2.5-flash'
+const GEMINI_MODEL = 'gemini-2.0-flash'
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`
 
 export const hasGeminiKey = () => Boolean(GEMINI_API_KEY)
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface ChatMessage {
   role: 'user' | 'model'
@@ -47,11 +34,6 @@ interface GeminiRequest {
   }
 }
 
-// ─── Retriever: Build Context Strings ─────────────────────────────────────────
-
-/**
- * Retrieve data saham — versi SLIM untuk hemat token (~120 token per saham).
- */
 export function buildStockContext(ticker: string): string {
   const clean = ticker.toUpperCase()
   const stock = getDummyStock(clean)
@@ -60,11 +42,8 @@ export function buildStockContext(ticker: string): string {
   const news = getDummyNews(clean)
   const rankRow = RANKING_ROWS.find(r => r.ticker === clean)
 
-  // Hanya berita top 1
   const topNews = news[0] ? `Berita: ${news[0].headline} [${news[0].tone}]` : ''
-  // Sentimen ringkas
   const sent = sentiments.map(s => `${s.label}:${s.verdict}(${s.value})`).join(' ')
-  // Ranking
   const rank = rankRow ? `Rank:#${rankRow.rank} Skor:${rankRow.score} ${rankRow.rec} Conf:${rankRow.confPct}%` : ''
 
   return [
@@ -77,9 +56,6 @@ export function buildStockContext(ticker: string): string {
   ].filter(Boolean).join('\n')
 }
 
-/**
- * Build konteks global: indices, top ranking, semua saham.
- */
 export function buildGlobalContext(): string {
   const lines: string[] = [
     `=== KONDISI PASAR GLOBAL & IHSG ===`,
@@ -103,14 +79,9 @@ export function buildGlobalContext(): string {
   return lines.join('\n')
 }
 
-/**
- * Build konteks multi-saham untuk pertanyaan komparasi.
- */
 export function buildMultiStockContext(tickers: string[]): string {
   return tickers.map(t => buildStockContext(t)).join('\n\n')
 }
-
-// ─── System Prompt ─────────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `Kamu analis saham IDX. Jawab HANYA dari data yang diberikan. Bahasa Indonesia. WAJIB max 3 baris. Tidak boleh lebih.
 
@@ -121,12 +92,6 @@ Baris 3: Target / risiko / peringatan - akhiri dengan [bukan saran investasi]
 
 Jika tidak ada data: tulis "Data tidak tersedia" - jangan karang angka.`
 
-// ─── Gemini API Caller ─────────────────────────────────────────────────────────
-
-/**
- * Core function: kirim request ke Gemini API dan return teks response.
- * Throws error jika API key tidak ada atau request gagal.
- */
 async function callGemini(
   contents: GeminiContent[],
   temperature = 0.7,
@@ -149,7 +114,6 @@ async function callGemini(
     body: JSON.stringify(body),
   })
 
-  // Auto-retry sekali jika 429 (rate limit)
   if (res.status === 429 && retries > 0) {
     await new Promise(r => setTimeout(r, 6000))
     return callGemini(contents, temperature, maxTokens, 0)
@@ -168,12 +132,6 @@ async function callGemini(
   return text
 }
 
-// ─── RAG Functions ─────────────────────────────────────────────────────────────
-
-/**
- * Generate AI Synthesis untuk satu saham.
- * Retrieve data saham → susun konteks → Gemini generate analisis.
- */
 export async function generateSynthesis(ticker: string): Promise<string[]> {
   const context = buildStockContext(ticker)
 
@@ -190,7 +148,6 @@ Output: 3 baris saja. Baris 1: sinyal harga & arah. Baris 2: alasan teknikal+fun
 
   const raw = await callGemini(contents, 0.6, 300)
 
-  // Split response menjadi array paragraf
   const paragraphs = raw
     .split(/\n\n+/)
     .map(p => p.trim())
@@ -199,19 +156,13 @@ Output: 3 baris saja. Baris 1: sinyal harga & arah. Baris 2: alasan teknikal+fun
   return paragraphs.length > 0 ? paragraphs : [raw.trim()]
 }
 
-/**
- * RAG Chat: jawab pertanyaan user berdasarkan data saham yang relevan.
- * Secara otomatis mendeteksi ticker yang disebut dan memuat konteksnya.
- */
 export async function chatWithRAG(
   messages: ChatMessage[],
   activeTicker?: string
 ): Promise<string> {
-  // Deteksi ticker dari pesan terakhir user
   const lastUserMsg = [...messages].reverse().find(m => m.role === 'user')?.text ?? ''
   const mentionedTickers = detectTickers(lastUserMsg)
 
-  // Bangun konteks berdasarkan ticker yang relevan
   let context = ''
   const tickersToLoad = new Set<string>()
 
@@ -219,17 +170,14 @@ export async function chatWithRAG(
   mentionedTickers.forEach(t => tickersToLoad.add(t))
 
   if (tickersToLoad.size === 0) {
-    // Tidak ada ticker spesifik → gunakan konteks global
     context = buildGlobalContext()
   } else if (tickersToLoad.size === 1) {
     const ticker = [...tickersToLoad][0]
     context = buildStockContext(ticker)
   } else {
-    // Multi-ticker: load semua yang disebutkan + global
     context = buildGlobalContext() + '\n\n' + buildMultiStockContext([...tickersToLoad])
   }
 
-  // Susun contents: injek context ke pesan pertama user
   const firstUserIdx = messages.findIndex(m => m.role === 'user')
   const contentsRaw: ChatMessage[] = messages.map((m, i) => {
     if (i === firstUserIdx) {
@@ -249,24 +197,16 @@ export async function chatWithRAG(
   return callGemini(contents, 0.7, 200)
 }
 
-// ─── Helper: Detect Tickers ───────────────────────────────────────────────────
-
-/** Daftar ticker yang dikenal */
 const KNOWN_TICKERS = ['BBCA', 'BBRI', 'TLKM', 'ASII', 'GOTO', 'BMRI', 'UNVR', 'ICBP', 'BUKA', 'LQ45', 'IHSG']
 
-/**
- * Deteksi ticker saham yang disebutkan dalam teks query.
- */
 export function detectTickers(text: string): string[] {
   const upper = text.toUpperCase()
   const found: string[] = []
 
-  // Cek known tickers
   KNOWN_TICKERS.forEach(ticker => {
     if (upper.includes(ticker)) found.push(ticker)
   })
 
-  // Cek pattern 4-huruf kapital (kemungkinan ticker)
   const matches = upper.match(/\b[A-Z]{4}\b/g) ?? []
   matches.forEach(m => {
     if (!found.includes(m) && !['YANG', 'ATAU', 'JIKA', 'DARI', 'PADA', 'AKAN', 'BISA', 'SAJA'].includes(m)) {

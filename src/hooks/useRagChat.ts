@@ -1,7 +1,3 @@
-/**
- * useRagChat.ts — Hook untuk mengelola state chat RAG
- */
-
 import { useState, useCallback } from 'react'
 import { chatWithRAG, hasGeminiKey } from '@/services/rag'
 import type { ChatMessage } from '@/services/rag'
@@ -36,7 +32,6 @@ export function useRagChat(): UseChatReturn {
     setError(null)
 
     try {
-      // Kirim semua pesan (minus welcome) ke RAG
       const historyForApi = updatedMessages.filter(m => m.text !== WELCOME_MESSAGE.text)
       const responseText = await chatWithRAG(historyForApi, activeTicker)
 

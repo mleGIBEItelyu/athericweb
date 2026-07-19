@@ -1,15 +1,6 @@
-/**
- * AiChatPanel.tsx — Floating AI Chat Panel dengan RAG
- *
- * Context-aware: otomatis menyertakan data saham dari halaman aktif.
- * Mendukung multi-turn conversation dengan Gemini.
- */
-
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRagChat } from '@/hooks/useRagChat'
 import type { ChatMessage } from '@/services/rag'
-
-// ─── Quick Prompt Suggestions ─────────────────────────────────────────────────
 
 const QUICK_PROMPTS = [
   { label: 'Analisis BBCA', text: 'Berikan analisis lengkap saham BBCA saat ini.' },
@@ -17,8 +8,6 @@ const QUICK_PROMPTS = [
   { label: 'Top Pick hari ini', text: 'Saham apa yang paling direkomendasikan saat ini berdasarkan skor AI?' },
   { label: 'GOTO worth it?', text: 'Apakah saham GOTO layak dibeli atau dijual saat ini?' },
 ]
-
-// ─── Markdown Renderer Sederhana ──────────────────────────────────────────────
 
 function renderMarkdown(text: string): string {
   return text
@@ -29,8 +18,6 @@ function renderMarkdown(text: string): string {
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br/>')
 }
-
-// ─── Message Bubble ───────────────────────────────────────────────────────────
 
 function MessageBubble({ msg, isLatest }: { msg: ChatMessage; isLatest: boolean }) {
   const isUser = msg.role === 'user'
@@ -63,9 +50,7 @@ function MessageBubble({ msg, isLatest }: { msg: ChatMessage; isLatest: boolean 
           maxWidth: '82%',
           padding: '10px 14px',
           borderRadius: isUser ? '14px 14px 4px 14px' : '4px 14px 14px 14px',
-          background: isUser
-            ? 'var(--blue)'
-            : 'var(--panel)',
+          background: isUser ? 'var(--blue)' : 'var(--panel)',
           border: isUser ? 'none' : '1px solid var(--border-strong)',
           fontSize: '13px',
           lineHeight: 1.6,
@@ -79,8 +64,6 @@ function MessageBubble({ msg, isLatest }: { msg: ChatMessage; isLatest: boolean 
     </div>
   )
 }
-
-// ─── Typing Indicator ─────────────────────────────────────────────────────────
 
 function TypingIndicator() {
   return (
@@ -109,8 +92,6 @@ function TypingIndicator() {
     </div>
   )
 }
-
-// ─── No API Key Notice ────────────────────────────────────────────────────────
 
 function NoKeyNotice() {
   return (
@@ -147,8 +128,6 @@ function NoKeyNotice() {
   )
 }
 
-// ─── Main Chat Panel ──────────────────────────────────────────────────────────
-
 interface Props {
   activeTicker?: string
   onClose: () => void
@@ -160,7 +139,6 @@ export function AiChatPanel({ activeTicker, onClose }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  // Auto-scroll ke bawah saat pesan baru masuk
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
@@ -187,7 +165,6 @@ export function AiChatPanel({ activeTicker, onClose }: Props) {
 
   return (
     <div className="ai-chat-panel" role="dialog" aria-label="Atheric AI Chat">
-      {/* Header */}
       <div className="ai-chat-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
@@ -237,10 +214,8 @@ export function AiChatPanel({ activeTicker, onClose }: Props) {
         </div>
       </div>
 
-      {/* No Key Notice */}
       {!hasKey && <NoKeyNotice />}
 
-      {/* Quick Prompts */}
       {hasKey && messages.length <= 1 && (
         <div style={{ padding: '10px 16px 0', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           {QUICK_PROMPTS.map(qp => (
@@ -263,7 +238,6 @@ export function AiChatPanel({ activeTicker, onClose }: Props) {
         </div>
       )}
 
-      {/* Messages */}
       <div className="ai-chat-messages">
         {messages.map((msg, i) => (
           <MessageBubble key={i} msg={msg} isLatest={i === messages.length - 1} />
@@ -272,7 +246,6 @@ export function AiChatPanel({ activeTicker, onClose }: Props) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
       <div className="ai-chat-input-area">
         <textarea
           ref={inputRef}
@@ -308,9 +281,7 @@ export function AiChatPanel({ activeTicker, onClose }: Props) {
           style={{
             width: '38px', height: '38px', borderRadius: 'var(--radius-sm)',
             border: 'none', flexShrink: 0,
-            background: !input.trim() || isLoading || !hasKey
-              ? 'var(--border-strong)'
-              : 'var(--blue)',
+            background: !input.trim() || isLoading || !hasKey ? 'var(--border-strong)' : 'var(--blue)',
             color: !input.trim() || isLoading || !hasKey ? 'var(--text-mute)' : '#fff',
             cursor: !input.trim() || isLoading || !hasKey ? 'not-allowed' : 'pointer',
             display: 'grid', placeItems: 'center', fontSize: '16px',
@@ -323,7 +294,6 @@ export function AiChatPanel({ activeTicker, onClose }: Props) {
         </button>
       </div>
 
-      {/* Footer */}
       <div style={{ padding: '6px 16px 10px', fontSize: '10px', color: 'var(--text-mute)', textAlign: 'center' }}>
         Powered by Google Gemini · Bukan saran investasi
       </div>

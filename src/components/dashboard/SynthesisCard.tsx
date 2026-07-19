@@ -1,7 +1,3 @@
-/**
- * SynthesisCard.tsx — Auto-generate AI Synthesis via RAG saat mount
- */
-
 import { useState, useEffect, useRef } from 'react'
 import { useSynthesis } from '@/hooks/useStock'
 import { generateSynthesis, hasGeminiKey } from '@/services/rag'
@@ -14,14 +10,13 @@ export function SynthesisCard({ ticker }: Props) {
   const [ragParagraphs, setRagParagraphs] = useState<string[] | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const generatedRef = useRef<string | null>(null) // track ticker yang sudah di-generate
+  const generatedRef = useRef<string | null>(null)
 
   const hasKey = hasGeminiKey()
 
-  // Auto-generate saat mount atau ticker berganti (hanya jika API key ada)
   useEffect(() => {
     if (!hasKey) return
-    if (generatedRef.current === ticker) return // skip jika sudah pernah generate ticker ini
+    if (generatedRef.current === ticker) return
 
     generatedRef.current = ticker
     setRagParagraphs(null)
@@ -33,7 +28,7 @@ export function SynthesisCard({ ticker }: Props) {
       .catch(err => {
         const msg = err instanceof Error ? err.message : 'Terjadi kesalahan'
         setError(msg)
-        generatedRef.current = null // allow retry
+        generatedRef.current = null
       })
       .finally(() => setIsGenerating(false))
   }, [ticker, hasKey])
@@ -43,7 +38,6 @@ export function SynthesisCard({ ticker }: Props) {
 
   return (
     <section className="card panel-card synth-card">
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
         <span className="card-title" style={{ margin: 0 }}>AI Synthesis</span>
         {isRag && !isGenerating && (
@@ -70,7 +64,6 @@ export function SynthesisCard({ ticker }: Props) {
         )}
       </div>
 
-      {/* Error state */}
       {error && (
         <div style={{
           padding: '10px 12px', borderRadius: 'var(--radius-sm)', marginBottom: '12px',
@@ -81,7 +74,6 @@ export function SynthesisCard({ ticker }: Props) {
         </div>
       )}
 
-      {/* Skeleton loading */}
       {isGenerating && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {[100, 88, 94, 72, 100, 82, 90, 65].map((w, i) => (
@@ -95,7 +87,6 @@ export function SynthesisCard({ ticker }: Props) {
         </div>
       )}
 
-      {/* Content */}
       {!isGenerating && (
         <div className="synth-scroll">
           {paragraphs.map((p, i) => (
@@ -108,7 +99,6 @@ export function SynthesisCard({ ticker }: Props) {
         </div>
       )}
 
-      {/* Footer disclaimer saat RAG */}
       {isRag && !isGenerating && (
         <div style={{
           marginTop: '10px', paddingTop: '8px', borderTop: '1px solid var(--border)',
